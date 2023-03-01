@@ -25,15 +25,15 @@ class LambdaStack(core.Stack):
 
         self.model_bucket = s3.Bucket.from_bucket_name(scope=self,
                                                        id=f'{id}-model-bucket',
-                                                       bucket_name='deep-lambda-bucket')
-
-        self.ecs_cluster = ecs.Cluster(self,
+                                                       bucket_name='deep-lambda')
+        self.ecs_cluster = ecs.Cluster(scope=self,
                                        id=f'{id}-ecs',
                                        cluster_name='deep-lambda-serving-ecs',
                                        vpc=self.vpc,
                                        container_insights=True)
 
-        self.ecr_repository = ecr.Repository.from_repository_name(repository_name=f'deep-lambda')
+        self.ecr_repository = ecr.Repository.from_repository_name(scope=self, id='deep-lambda-ecr-repo',
+                                                                  repository_name=f'deep-lambda')
 
         self.lambda_function = aws_lambda.Function(
             scope=self,
@@ -42,7 +42,7 @@ class LambdaStack(core.Stack):
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             ephemeral_storage_size=Size.gibibytes(2),
             code=aws_lambda.Code.from_ecr_image(repository=self.ecr_repository),
-            handler='index.handler',
+            handler=aws_lambda.Handler.FROM_IMAGE,
         )
 
         self.model_bucket.grant_read(self.lambda_function)
