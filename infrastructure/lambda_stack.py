@@ -7,7 +7,7 @@ from aws_cdk import (
     aws_lambda,
     core
 )
-from aws_cdk.aws_lambda import Handler
+
 from aws_cdk.core import Size
 
 
@@ -33,21 +33,21 @@ class LambdaStack(core.Stack):
                                        vpc=self.vpc,
                                        container_insights=True)
 
-        ecr_repository = ecr.Repository(scope=self, id=f'deep-lambda-ecr-repo')
+        self.ecr_repository = ecr.Repository.from_repository_name(repository_name=f'deep-lambda')
 
-        lambda_function = aws_lambda.Function(
+        self.lambda_function = aws_lambda.Function(
             scope=self,
             id='deep-lambda-function',
             vpc=self.vpc,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             ephemeral_storage_size=Size.gibibytes(2),
-            code=aws_lambda.Code.from_ecr_image(repository=ecr_repository),
-            handler=Handler.FROM_IMAGE,
-            environment={'MODEL_BUCKET_NAME': 'deep-lambda-bucket'}
+            code=aws_lambda.Code.from_ecr_image(repository=self.ecr_repository),
+            handler='index.handler',
         )
 
-        self.model_bucket.grant_read(lambda_function)
+        self.model_bucket.grant_read(self.lambda_function)
+        self.ecr_repository.grant_pull(self.lambda_function)
 
-        rest_api = api.LambdaRestApi(self, "books-api", handler=lambda_function)
-        classify = rest_api.root.add_resource("classify")
+        rest_api = api.LambdaRestApi(self, 'ner-tagging', handler=self.lambda_function)
+        classify = rest_api.root.add_resource('tag')
         classify.add_method("POST")
