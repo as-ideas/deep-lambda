@@ -33,11 +33,11 @@ class LambdaStack(core.Stack):
             scope=self,
             id='deep-lambda-function',
             vpc=self.vpc,
+            memory_size=8384,
             runtime=aws_lambda.Runtime.FROM_IMAGE,
-            ephemeral_storage_size=Size.gibibytes(2),
-            code=aws_lambda.EcrImageCode(self.ecr_repository),
+            code=aws_lambda.Code.from_ecr_image(self.ecr_repository, cmd=['app.lambda_handler']),
             handler=aws_lambda.Handler.FROM_IMAGE,
-            memory_size=8384
+            ephemeral_storage_size=Size.gibibytes(2),
         )
 
         self.model_bucket.grant_read(self.lambda_function)
