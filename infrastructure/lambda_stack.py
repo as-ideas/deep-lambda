@@ -45,6 +45,7 @@ class LambdaStack(core.Stack):
         self.model_bucket.grant_read(self.lambda_function)
         self.ecr_repository.grant_pull(self.lambda_function)
 
-        self.rest_api = api.LambdaRestApi(self, 'ner-tagging', handler=self.lambda_function)
+        self.rest_api = api.LambdaRestApi(self, 'ner-tagging',
+                                          handler=self.lambda_function)
         classify = self.rest_api.root.add_resource('tag')
         classify.add_method("POST")
