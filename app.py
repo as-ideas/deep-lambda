@@ -1,5 +1,6 @@
 import logging
 import boto3
+import json
 from typing import Dict, Any
 
 from ner.tagger import Tagger
@@ -18,5 +19,6 @@ tagger = Tagger('/tmp/my_ner_tagger.pt')
 
 
 def lambda_handler(event: Dict[str, Any], _: Dict[str, str]) -> str:
-    text = event['text']
+    logger.info(f'Processing event: {event}')
+    text = json.load(event['body'])['text']
     return tagger(text)
