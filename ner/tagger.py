@@ -1,11 +1,17 @@
+import logging
+
 from flair.data import Sentence
 from flair.models import SequenceTagger
+
+logger = logging.getLogger(__name__)
 
 
 class Tagger:
 
     def __init__(self, model_path: str):
+        logger.info(f'Initializing flair tagger from path: {model_path}')
         self.flair_tagger = SequenceTagger.load(model_path)
+        logger.info(f'Successfully initialized tagger from path: {model_path}')
 
     def __call__(self, text: str) -> str:
         sentence = Sentence(text)

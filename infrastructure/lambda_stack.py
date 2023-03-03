@@ -7,7 +7,7 @@ from aws_cdk import (
     core
 )
 
-from aws_cdk.core import Size
+from aws_cdk.core import Size, Duration
 
 
 class LambdaStack(core.Stack):
@@ -38,6 +38,7 @@ class LambdaStack(core.Stack):
             code=aws_lambda.Code.from_ecr_image(self.ecr_repository, cmd=['app.lambda_handler']),
             handler=aws_lambda.Handler.FROM_IMAGE,
             ephemeral_storage_size=Size.gibibytes(2),
+            timeout=Duration.minutes(5)
         )
 
         self.model_bucket.grant_read(self.lambda_function)
