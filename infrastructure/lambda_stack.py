@@ -45,7 +45,15 @@ class LambdaStack(core.Stack):
         self.model_bucket.grant_read(self.lambda_function)
         self.ecr_repository.grant_pull(self.lambda_function)
 
-        self.rest_api = api.LambdaRestApi(self, 'ner-tagging',
+        # connect a rest api to lambda and deploy to prod
+        self.rest_api = api.LambdaRestApi(scope=self,
+                                          id='deep-lambda-api',
                                           handler=self.lambda_function)
         classify = self.rest_api.root.add_resource('tag')
         classify.add_method("POST")
+        api_deployment = api.Deployment(scope=self,
+                                        id="deep-lambda-api-deployment",
+                                        api=self.rest_api)
+        self.api_prod = api.Stage(scope=self,
+                                  id='deep-lambda-api-prod-stage',
+                                  deployment=api_deployment)
