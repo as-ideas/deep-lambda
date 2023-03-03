@@ -19,4 +19,4 @@ tagger = Tagger('/tmp/my_ner_tagger.pt')
 
 def lambda_handler(event: Dict[str, Any], _: Dict[str, str]) -> str:
     text = event['text']
-    return text#tagger(text)
+    return tagger(text)
