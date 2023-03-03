@@ -1,4 +1,6 @@
 import logging
+from logging import INFO
+
 import boto3
 import json
 from typing import Dict, Any
@@ -6,6 +8,7 @@ from typing import Dict, Any
 from ner.tagger import Tagger
 
 logger = logging.getLogger(__name__)
+logger.setLevel(level=INFO)
 
 
 logger.info('Downloading model from bucket')
@@ -20,5 +23,5 @@ tagger = Tagger('/tmp/my_ner_tagger.pt')
 
 def lambda_handler(event: Dict[str, Any], _: Dict[str, str]) -> str:
     logger.info(f'Processing event: {event}')
-    text = json.load(event['body'])['text']
+    text = event['body']
     return tagger(text)
