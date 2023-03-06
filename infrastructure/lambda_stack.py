@@ -53,7 +53,8 @@ class LambdaStack(core.Stack):
         classify.add_method("POST")
         self.api_deployment = api.Deployment(scope=self,
                                              id="deep-lambda-api-deployment",
-                                             api=self.rest_api)
+                                             api=self.rest_api,
+                                             )
         #self.api_prod = api.Stage(scope=self,
         #                          id='deep-lambda-api-prod-stage',
         #                          stage_name='deep-lambda-prod',
