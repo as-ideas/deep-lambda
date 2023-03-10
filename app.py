@@ -2,10 +2,9 @@ import logging
 from logging import INFO
 
 import boto3
-import json
 from typing import Dict, Any
 
-from ner.tagger import Tagger
+from tagger import Tagger
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=INFO)

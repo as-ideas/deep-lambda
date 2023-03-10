@@ -7,8 +7,6 @@ from aws_cdk import (
     core
 )
 
-from aws_cdk.core import Size, Duration
-
 
 class LambdaStack(core.Stack):
 
@@ -37,8 +35,8 @@ class LambdaStack(core.Stack):
             runtime=aws_lambda.Runtime.FROM_IMAGE,
             code=aws_lambda.Code.from_ecr_image(self.ecr_repository, cmd=['app.lambda_handler']),
             handler=aws_lambda.Handler.FROM_IMAGE,
-            ephemeral_storage_size=Size.gibibytes(2),
-            timeout=Duration.minutes(5),
+            ephemeral_storage_size=core.Size.gibibytes(2),
+            timeout=core.Duration.minutes(5),
             environment={'PYTORCH_TRANSFORMERS_CACHE': '/tmp/'}
         )
 
@@ -53,9 +51,4 @@ class LambdaStack(core.Stack):
         classify.add_method("POST")
         self.api_deployment = api.Deployment(scope=self,
                                              id="deep-lambda-api-deployment",
-                                             api=self.rest_api,
-                                             )
-        #self.api_prod = api.Stage(scope=self,
-        #                          id='deep-lambda-api-prod-stage',
-        #                          stage_name='deep-lambda-prod',
-        #                          deployment=api_deployment)
+                                             api=self.rest_api)
