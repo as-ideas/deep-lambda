@@ -21,8 +21,6 @@ class LambdaStack(core.Stack):
                            cidr='10.0.8.0/21',
                            nat_gateways=1)
 
-        self.vpc.add_gateway_vpc_endpoint('s3-endpoint')
-
         self.model_bucket = s3.Bucket.from_bucket_name(scope=self,
                                                        id=f'{id}-model-bucket',
                                                        bucket_name='deep-lambda')
