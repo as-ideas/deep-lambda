@@ -1,11 +1,11 @@
 from aws_cdk import (
-    aws_apigateway as api,
     aws_s3 as s3,
     aws_ec2 as ec2,
     aws_ecr as ecr,
     aws_lambda,
     core
 )
+from aws_cdk.aws_lambda import FunctionUrlAuthType
 
 
 class LambdaStack(core.Stack):
@@ -38,18 +38,9 @@ class LambdaStack(core.Stack):
             handler=aws_lambda.Handler.FROM_IMAGE,
             ephemeral_storage_size=core.Size.gibibytes(2),
             timeout=core.Duration.minutes(5),
-            environment={'PYTORCH_TRANSFORMERS_CACHE': '/tmp/'}
+            environment={'PYTORCH_TRANSFORMERS_CACHE': '/tmp/'},
         )
 
+        self.lambda_function.add_function_url(auth_type=FunctionUrlAuthType.NONE)
         self.model_bucket.grant_read(self.lambda_function)
         self.ecr_repository.grant_pull(self.lambda_function)
-
-        # connect a rest api to lambda and deploy to prod
-        self.rest_api = api.LambdaRestApi(scope=self,
-                                          id='deep-lambda-api',
-                                          handler=self.lambda_function)
-        classify = self.rest_api.root.add_resource('tag')
-        classify.add_method("POST")
-        self.api_deployment = api.Deployment(scope=self,
-                                             id="deep-lambda-api-deployment",
-                                             api=self.rest_api)
